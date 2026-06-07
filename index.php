@@ -17,31 +17,38 @@ if (file_exists('config/db.php')) {
 $page = isset($_GET['page']) ? $_GET['page'] : 'home';
 
 // Structure de contrôle pour diriger l'utilisateur vers le bon contrôleur
+
+// Remplace le bloc switch existant dans ton index.php par celui-ci :
+
+// Inclusion du contrôleur d'authentification
+require_once 'controllers/AuthController.php';
+$authController = new AuthController($pdo); // On lui passe la connexion PDO $pdo de config/db.php
+
 switch ($page) {
     case 'home':
-        // Exemple : Appeler le contrôleur de la page d'accueil
-        // require_once 'controllers/HomeController.php';
-        echo "<h1>Bienvenue sur ShopESA ! (Page d'accueil)</h1><p>Le routeur fonctionne parfaitement.</p>";
+        echo "<h1>Bienvenue chez Nous ! (Page d'accueil)</h1><p>Le routeur fonctionne parfaitement.</p>";
         break;
 
     case 'catalogue':
-        // Page de la liste des produits
         echo "<h1>Catalogue des Produits ShopESA</h1>";
         break;
 
     case 'panier':
-        // Page de gestion du panier
         echo "<h1>Votre Panier</h1>";
         break;
 
     case 'connexion':
-        // Page de connexion
-        echo "<h1>Connexion Client / Admin</h1>";
+        // On délègue le travail au contrôleur
+        $authController->connexion();
         break;
 
     case 'inscription':
-        // Page d'inscription
-        echo "<h1>Créer un compte</h1>";
+        // On délègue le travail au contrôleur
+        $authController->inscription();
+        break;
+        
+    case 'deconnexion':
+        $authController->deconnexion();
         break;
 
     default:
