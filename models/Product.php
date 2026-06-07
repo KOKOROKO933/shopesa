@@ -8,22 +8,14 @@ class Product {
         $this->db = $database;
     }
 
-    // --- CÔTÉ CATALOGUE ---
-    /**
-     * Récupérer tous les produits pour les afficher sur le site
-     */
+    // Récupérer tous les produits
     public function getAllProducts() {
-        $sql = "SELECT p.*, c.nom as categorie_nom 
-                FROM products p 
-                LEFT JOIN categories c ON p.cat_id = c.id 
-                ORDER BY p.id DESC";
+        $sql = "SELECT * FROM products ORDER BY id DESC";
         $stmt = $this->db->query($sql);
         return $stmt->fetchAll();
     }
 
-    /**
-     * Récupérer un produit spécifique par son ID
-     */
+    // Récupérer un produit par son ID (Pour la modification)
     public function getProductById($id) {
         $sql = "SELECT * FROM products WHERE id = :id";
         $stmt = $this->db->prepare($sql);
@@ -31,27 +23,36 @@ class Product {
         return $stmt->fetch();
     }
 
-    // --- CÔTÉ ADMINISTRATION (CRUD) ---
-    /**
-     * Ajouter un nouveau produit
-     */
-    public function addProduct($nom, $description, $prix, $stock, $image, $cat_id) {
-        $sql = "INSERT INTO products (nom, description, prix, stock, image, cat_id) 
-                VALUES (:nom, :description, :prix, :stock, :image, :cat_id)";
+    // Ajouter un produit
+    public function addProduct($nom, $description, $prix, $stock, $image) {
+        $sql = "INSERT INTO products (nom, description, prix, stock, image) 
+                VALUES (:nom, :description, :prix, :stock, :image)";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([
             ':nom' => htmlspecialchars($nom),
             ':description' => htmlspecialchars($description),
             ':prix' => $prix,
             ':stock' => $stock,
-            ':image' => $image,
-            ':cat_id' => $cat_id ?: null
+            ':image' => $image
         ]);
     }
 
-    /**
-     * Supprimer un produit
-     */
+    // Modifier un produit
+    public function updateProduct($id, $nom, $description, $prix, $stock) {
+        $sql = "UPDATE products 
+                SET nom = :nom, description = :description, prix = :prix, stock = :stock 
+                WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ':id' => $id,
+            ':nom' => htmlspecialchars($nom),
+            ':description' => htmlspecialchars($description),
+            ':prix' => $prix,
+            ':stock' => $stock
+        ]);
+    }
+
+    // 5. Supprimer un produit
     public function deleteProduct($id) {
         $sql = "DELETE FROM products WHERE id = :id";
         $stmt = $this->db->prepare($sql);

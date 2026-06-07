@@ -12,7 +12,7 @@
         <div class="container">
             <a class="navbar-brand fw-bold" href="index.php?page=home">ShopCaphy Dashboard Admin</a>
             <div class="navbar-nav ms-auto">
-                <a class="nav-link text-white" href="index.php?page=catalogue">Voir le site public</a>
+                <a class="nav-link text-white fw-bold" href="index.php?page=catalogue">Voir le site public</a>
                 <a class="btn btn-sm btn-outline-light ms-3" href="index.php?page=deconnexion">Déconnexion</a>
             </div>
         </div>
@@ -20,34 +20,45 @@
 
     <div class="container flex-grow-1">
         <div class="row">
+            
             <div class="col-lg-4 mb-4">
                 <div class="card shadow-sm border-0">
-                    <div class="card-header bg-dark text-white">
-                        <h5 class="mb-0">Ajouter un Produit</h5>
+                    <div class="card-header <?= $productToEdit ? 'bg-primary' : 'bg-dark' ?> text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><?= $productToEdit ? 'Modifier le Produit' : 'Ajouter un Produit' ?></h5>
+                        <?php if ($productToEdit): ?>
+                            <a href="index.php?page=admin_dashboard" class="btn btn-sm btn-light text-primary fw-bold">Annuler</a>
+                        <?php endif; ?>
                     </div>
                     <div class="card-body">
-                        <?php if ($erreur): ?><div class="alert alert-danger"><?= $erreur ?></div><?php endif; ?>
-                        <?php if ($succes): ?><div class="alert alert-success"><?= $succes ?></div><?php endif; ?>
+                        <?php if ($erreur): ?><div class="alert alert-danger py-2"><?= $erreur ?></div><?php endif; ?>
+                        <?php if ($succes): ?><div class="alert alert-success py-2"><?= $succes ?></div><?php endif; ?>
 
                         <form action="index.php?page=admin_dashboard" method="POST">
-                            <input type="hidden" name="action" value="ajouter">
+                            <input type="hidden" name="action" value="<?= $productToEdit ? 'modifier' : 'ajouter' ?>">
+                            <?php if ($productToEdit): ?>
+                                <input type="hidden" name="id" value="<?= $productToEdit['id'] ?>">
+                            <?php endif; ?>
+
                             <div class="mb-3">
-                                <label class="form-label">Nom du produit *</label>
-                                <input type="text" name="nom" class="form-control" required>
+                                <label class="form-label fw-bold">Nom du produit *</label>
+                                <input type="text" name="nom" class="form-control" required value="<?= $productToEdit ? htmlspecialchars($productToEdit['nom']) : '' ?>">
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Description</label>
-                                <textarea name="description" class="form-control" rows="3"></textarea>
+                                <label class="form-label fw-bold">Description</label>
+                                <textarea name="description" class="form-control" rows="3"><?= $productToEdit ? htmlspecialchars($productToEdit['description']) : '' ?></textarea>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Prix (F CFA) *</label>
-                                <input type="number" step="0.01" name="prix" class="form-control" required>
+                                <label class="form-label fw-bold">Prix (F CFA) *</label>
+                                <input type="number" step="0.01" name="prix" class="form-control" required value="<?= $productToEdit ? $productToEdit['prix'] : '' ?>">
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Stock initial *</label>
-                                <input type="number" name="stock" class="form-control" required value="10">
+                                <label class="form-label fw-bold">Stock *</label>
+                                <input type="number" name="stock" class="form-control" required value="<?= $productToEdit ? $productToEdit['stock'] : '10' ?>">
                             </div>
-                            <button type="submit" class="btn btn-danger w-100">Enregistrer le produit</button>
+                            
+                            <button type="submit" class="btn <?= $productToEdit ? 'btn-primary' : 'btn-danger' ?> w-100 fw-bold">
+                                <?= $productToEdit ? 'Enregistrer les modifications' : 'Enregistrer le produit' ?>
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -67,7 +78,7 @@
                                         <th>Nom</th>
                                         <th>Prix</th>
                                         <th>Stock</th>
-                                        <th class="text-center">Action</th>
+                                        <th class="text-center" style="width: 180px;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -77,13 +88,25 @@
                                         <?php foreach($products as $product): ?>
                                             <tr>
                                                 <td>#<?= $product['id'] ?></td>
-                                                <td class="fw-bold"><?= htmlspecialchars($product['nom']) ?></td>
-                                                <td><?= number_format($product['prix'], 0, ',', ' ') ?> F</td>
-                                                <td><span class="badge bg-<?= $product['stock'] > 0 ? 'secondary' : 'danger' ?>"><?= $product['stock'] ?></span></td>
+                                                <td class="fw-bold text-secondary"><?= htmlspecialchars($product['nom']) ?></td>
+                                                <td class="fw-bold"><?= number_format($product['prix'], 0, ',', ' ') ?> F</td>
+                                                <td>
+                                                    <span class="badge bg-<?= $product['stock'] > 0 ? 'success' : 'danger' ?>">
+                                                        <?= $product['stock'] ?>
+                                                    </span>
+                                                </td>
                                                 <td class="text-center">
-                                                    <a href="index.php?page=admin_dashboard&action=supprimer&id=<?= $product['id'] ?>" 
-                                                       class="btn btn-sm btn-outline-danger" 
-                                                       onclick="return confirm('Supprimer ce produit ?')">Supprimer</a>
+                                                    <div class="btn-group" role="group">
+                                                        <a href="index.php?page=admin_dashboard&action=modifier&id=<?= $product['id'] ?>" 
+                                                           class="btn btn-sm btn-outline-primary">
+                                                            Modifier
+                                                        </a>
+                                                        <a href="index.php?page=admin_dashboard&action=supprimer&id=<?= $product['id'] ?>" 
+                                                           class="btn btn-sm btn-outline-danger" 
+                                                           onclick="return confirm('Supprimer définitivement ce produit ?')">
+                                                            Supprimer
+                                                        </a>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>
@@ -94,6 +117,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 
