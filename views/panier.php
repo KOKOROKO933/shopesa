@@ -31,6 +31,9 @@
     <div class="container my-5">
     <h2 class="fw-bold mb-4">Votre Panier d'Achat</h2>
 
+    <div class="container my-5">
+    <h2 class="fw-bold mb-4">Votre Panier d'Achat</h2>
+
     <?php if (empty($cartItems)): ?>
         <div class="alert alert-warning text-center py-4">
             <p class="mb-3">Votre panier est actuellement vide.</p>
@@ -45,7 +48,7 @@
                             <tr>
                                 <th>Produit</th>
                                 <th>Prix</th>
-                                <th>Quantité</th>
+                                <th class="text-center">Quantité</th>
                                 <th>Sous-total</th>
                                 <th>Action</th>
                             </tr>
@@ -63,13 +66,17 @@
                                         </div>
                                     </td>
                                     <td><?= number_format($item['prix'], 0, ',', ' ') ?> F CFA</td>
-                                    <td>
-                                        <span class="badge bg-dark px-3 py-2 fs-6"><?= $item['quantite'] ?></span>
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center align-items-center gap-2">
+                                            <a href="index.php?page=update_quantite&id=<?= $item['id'] ?>&action=moins" class="btn btn-sm btn-outline-secondary px-2">-</a>
+                                            <span class="fw-bold fs-6 mx-1"><?= $item['quantite'] ?></span>
+                                            <a href="index.php?page=update_quantite&id=<?= $item['id'] ?>&action=plus" class="btn btn-sm btn-outline-secondary px-2 <?php if($item['quantite'] >= $item['stock_dispo']) echo 'disabled'; ?>">+</a>
+                                        </div>
                                     </td>
                                     <td class="fw-bold text-primary"><?= number_format($item['sous_total'], 0, ',', ' ') ?> F CFA</td>
                                     <td>
                                         <a href="index.php?page=supprimer_panier&id=<?= $item['id'] ?>" class="btn btn-sm btn-outline-danger">
-                                            <i class="bi bi-trash"></i> Retirer
+                                            Retirer
                                         </a>
                                     </td>
                                 </tr>
@@ -79,20 +86,24 @@
                 </div>
             </div>
 
-                <div class="col-lg-4">
-                    <div class="card shadow-sm border-0 p-4 bg-white">
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0 p-4 bg-white">
                     <h4 class="fw-bold mb-4">Résumé de la commande</h4>
-                    <div class="d-flex justify-content-between mb-3 fs-5">
-                        <span>Total articles :</span>
-                        <span class="fw-bold text-primary"><?= number_format($totalGeneral, 0, ',', ' ') ?> F CFA</span>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Total HT :</span>
+                        <span class="fw-bold"><?= number_format($totalHT, 0, ',', ' ') ?> F CFA</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 text-muted">
+                        <span>TVA (18%) :</span>
+                        <span><?= number_format($montantTVA, 0, ',', ' ') ?> F CFA</span>
                     </div>
                     <hr>
                     <div class="d-flex justify-content-between mb-4 fs-4 fw-bold">
-                        <span>Net à payer :</span>
-                        <span><?= number_format($totalGeneral, 0, ',', ' ') ?> F CFA</span>
+                        <span>Net à payer (TTC) :</span>
+                        <span class="text-primary"><?= number_format($totalTTC, 0, ',', ' ') ?> F CFA</span>
                     </div>
-                    <a href="index.php?page=commander" class="btn btn-danger w-100 py-2 fw-bold disabled">
-                        Passer à la caisse (Bientôt disponible)
+                    <a href="index.php?page=commander" class="btn btn-danger w-100 py-2 fw-bold">
+                        Passer à la caisse
                     </a>
                     <a href="index.php?page=catalogue" class="btn btn-outline-dark w-100 mt-2 py-2">
                         Continuer mes achats

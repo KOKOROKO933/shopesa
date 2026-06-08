@@ -31,6 +31,23 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'home';
 
 // 5. Routeur (Aiguillage des requêtes)
 switch ($page) {
+    case 'panier':
+        $cartController->index();
+        break;
+
+    case 'ajouter_panier':
+        $cartController->add();
+        break;
+
+    // NOUVELLE ROUTE POUR LES BOUTONS + ET -
+    case 'update_quantite':
+        $cartController->updateQuantite();
+        break;
+
+    case 'supprimer_panier':
+        $cartController->remove();
+        break;
+        
     case 'home':
         // Par défaut, rediriger vers le catalogue
         header('Location: index.php?page=catalogue');
