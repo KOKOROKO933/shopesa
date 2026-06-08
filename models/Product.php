@@ -70,19 +70,14 @@ class Product {
         $stmt = $this->db->prepare($sql);
         return $stmt->execute($params);
     }
-        /**
-     * Récupérer toutes les catégories depuis la table officielle 'categories'
-     */
-    public function getCategories() {
+    
+     public function getCategories() {
         $sql = "SELECT * FROM categories ORDER BY nom ASC";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC); // Retourne un tableau avec l'id et le nom de chaque catégorie
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Récupérer les produits filtrés par l'ID de leur catégorie (cat_id)
-     */
     public function getProductsByCategory($categoryId) {
         $sql = "SELECT * FROM products WHERE cat_id = :cat_id";
         $stmt = $this->db->prepare($sql);

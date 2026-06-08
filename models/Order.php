@@ -16,7 +16,7 @@ class Order {
             // On démarre la transaction
             $this->db->beginTransaction();
 
-            // 1. Insérer la commande globale
+            // Insérer la commande globale
             $sqlOrder = "INSERT INTO orders (user_id, total_ht, tva, total_ttc, status) 
                          VALUES (:user_id, :total_ht, :tva, :total_ttc, 'En attente')";
             $stmtOrder = $this->db->prepare($sqlOrder);
@@ -30,7 +30,7 @@ class Order {
             // Récupérer l'ID de la commande qui vient d'être généré
             $orderId = $this->db->lastInsertId();
 
-            // 2. Insérer chaque ligne de produit du panier
+            // Insérer chaque ligne de produit du panier
             $sqlItem = "INSERT INTO order_items (order_id, product_id, quantity, price) 
                         VALUES (:order_id, :product_id, :quantity, :price)";
             $stmtItem = $this->db->prepare($sqlItem);
@@ -64,5 +64,14 @@ class Order {
             $this->db->rollBack();
             return false;
         }
+    }
+        /**
+     * Récupérer toutes les commandes d'un utilisateur spécifique
+     */
+    public function getOrdersByUserId($userId) {
+        $sql = "SELECT * FROM orders WHERE user_id = :user_id ORDER BY created_at DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':user_id' => $userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

@@ -7,7 +7,7 @@
             
             <h2 class="fw-bold text-dark mb-3">Commande validée avec succès !</h2>
             <p class="text-muted fs-5 mb-4">
-                Merci pour votre achat sur <strong>ShopESA</strong>. Votre commande a été enregistrée de manière sécurisée dans notre système.
+                Merci pour votre achat sur <strong>ShopCaphy</strong>. Votre commande a été enregistrée de manière sécurisée dans notre système.
             </p>
 
             <div class="card bg-light border-0 p-3 mb-4 text-start">

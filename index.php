@@ -36,7 +36,26 @@ switch ($page) {
     case 'commander':
         $orderController->checkout();
         break;
-        
+
+    case 'confirmation':
+        $orderId = isset($_GET['id']) ? intval($_GET['id']) : 0;
+        $totalHT = isset($_GET['ht']) ? floatval($_GET['ht']) : 0;
+        $montantTVA = isset($_GET['tva']) ? floatval($_GET['tva']) : 0;
+        $totalTTC = isset($_GET['ttc']) ? floatval($_GET['ttc']) : 0;
+
+        require_once 'views/header.php';
+        require_once 'views/confirmation_commande.php';
+        require_once 'views/footer.php';
+        break;
+
+    case 'mes_commandes':
+        $orders = $orderController->mesCommandes();
+
+        require_once 'views/header.php';
+        require_once 'views/mes_commandes.php';
+        require_once 'views/footer.php';
+        break;
+
     case 'panier':
         $cartController->index();
         break;
