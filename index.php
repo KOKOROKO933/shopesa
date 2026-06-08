@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// 1. Connexion à la base de données
+// Connexion à la base de données
 if (file_exists('config/db.php')) {
     require_once 'config/db.php';
 } else {
@@ -15,22 +15,28 @@ if (file_exists('config/db.php')) {
 // NOTE : Dans ton projet, ta variable de connexion s'appelle $pdo. 
 // Nous allons donc l'utiliser pour tous les contrôleurs.
 
-// 2. Chargement de TOUS nos contrôleurs
+// Chargement de TOUS nos contrôleurs
+require_once 'controllers/OrderController.php';
 require_once 'controllers/AuthController.php';
 require_once 'controllers/ProductController.php';
 require_once 'controllers/AdminController.php';
 require_once 'controllers/CartController.php';
 
-// 3. Instanciation des contrôleurs
+// Instanciation des contrôleurs
 $authController    = new AuthController($pdo);
 $productController = new ProductController($pdo);
 $cartController    = new CartController($pdo);
+$orderController = new OrderController($pdo);
 
-// 4. Récupération de la page demandée (par défaut 'home')
+// Récupération de la page demandée (par défaut 'home')
 $page = isset($_GET['page']) ? $_GET['page'] : 'home';
 
-// 5. Routeur (Aiguillage des requêtes)
+// Routeur (Aiguillage des requêtes)
 switch ($page) {
+    case 'commander':
+        $orderController->checkout();
+        break;
+        
     case 'panier':
         $cartController->index();
         break;
@@ -47,7 +53,7 @@ switch ($page) {
     case 'supprimer_panier':
         $cartController->remove();
         break;
-        
+
     case 'home':
         // Par défaut, rediriger vers le catalogue
         header('Location: index.php?page=catalogue');

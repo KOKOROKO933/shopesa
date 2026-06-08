@@ -31,9 +31,6 @@
     <div class="container my-5">
     <h2 class="fw-bold mb-4">Votre Panier d'Achat</h2>
 
-    <div class="container my-5">
-    <h2 class="fw-bold mb-4">Votre Panier d'Achat</h2>
-
     <?php if (empty($cartItems)): ?>
         <div class="alert alert-warning text-center py-4">
             <p class="mb-3">Votre panier est actuellement vide.</p>
@@ -102,9 +99,11 @@
                         <span>Net à payer (TTC) :</span>
                         <span class="text-primary"><?= number_format($totalTTC, 0, ',', ' ') ?> F CFA</span>
                     </div>
+
                     <a href="index.php?page=commander" class="btn btn-danger w-100 py-2 fw-bold">
                         Passer à la caisse
                     </a>
+
                     <a href="index.php?page=catalogue" class="btn btn-outline-dark w-100 mt-2 py-2">
                         Continuer mes achats
                     </a>
