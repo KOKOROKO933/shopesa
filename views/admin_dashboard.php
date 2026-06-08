@@ -33,7 +33,8 @@
                         <?php if ($erreur): ?><div class="alert alert-danger py-2"><?= $erreur ?></div><?php endif; ?>
                         <?php if ($succes): ?><div class="alert alert-success py-2"><?= $succes ?></div><?php endif; ?>
 
-                        <form action="index.php?page=admin_dashboard" method="POST">
+                        <form action="index.php?page=admin_dashboard" method="POST" enctype="multipart/form-data">
+    
                             <input type="hidden" name="action" value="<?= $productToEdit ? 'modifier' : 'ajouter' ?>">
                             <?php if ($productToEdit): ?>
                                 <input type="hidden" name="id" value="<?= $productToEdit['id'] ?>">
@@ -54,6 +55,14 @@
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Stock *</label>
                                 <input type="number" name="stock" class="form-control" required value="<?= $productToEdit ? $productToEdit['stock'] : '10' ?>">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Image du produit</label>
+                                <input type="file" name="image_fichier" class="form-control" accept="image/*">
+                                <?php if ($productToEdit && !empty($productToEdit['image'])): ?>
+                                    <div class="form-text text-muted">Image actuelle : <?= htmlspecialchars($productToEdit['image']) ?></div>
+                                <?php endif; ?>
                             </div>
                             
                             <button type="submit" class="btn <?= $productToEdit ? 'btn-primary' : 'btn-danger' ?> w-100 fw-bold">

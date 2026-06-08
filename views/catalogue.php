@@ -34,31 +34,43 @@
         <?php if (empty($products)): ?>
             <div class="alert alert-info text-center">Aucun produit n'est disponible pour le moment.</div>
         <?php else: ?>
-            <div class="row row-cols-1 row-cols-md-3 g-4">
+           <div class="row">
                 <?php foreach ($products as $product): ?>
-                    <div class="col">
-                        <div class="card h-100 shadow-sm">
-                            <div class="bg-secondary text-white text-center py-5 rounded-top" style="font-size: 14px;">
-                                Image Produit
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 shadow-sm border-0">
+                            
+                            <div class="card-img-top-wrapper bg-light" style="height: 200px; overflow: hidden;">
+                                <?php 
+                                $imageName = !empty($product['image']) ? $product['image'] : 'default.jpg';
+                                $imagePath = 'public/images/' . $imageName;
+                                ?>
+                                <img src="<?= $imagePath ?>" 
+                                    alt="<?= htmlspecialchars($product['nom']) ?>" 
+                                    class="img-fluid w-100 h-100" 
+                                    style="object-fit: cover;">
                             </div>
-                            <div class="card-body">
+
+                            <div class="card-body d-flex flex-column">
                                 <h5 class="card-title fw-bold"><?= htmlspecialchars($product['nom']) ?></h5>
-                                <p class="card-text text-muted text-truncate"><?= htmlspecialchars($product['description']) ?></p>
-                                <div class="d-flex justify-content-between align-items-center mt-3">
-                                    <span class="fs-4 fw-bold text-primary"><?= number_format($product['prix'], 2, ',', ' ') ?> F CFA</span>
+                                <p class="card-text text-muted flex-grow-1">
+                                    <?= htmlspecialchars($product['description'] ?? '') ?>
+                                </p>
+                                
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="fs-5 fw-bold text-primary">
+                                        <?= number_format($product['prix'], 0, ',', ' ') ?> F CFA
+                                    </span>
                                     <span class="badge bg-<?= $product['stock'] > 0 ? 'success' : 'danger' ?>">
-                                        <?= $product['stock'] > 0 ? 'En stock ('.$product['stock'].')' : 'Rupture' ?>
+                                        <?= $product['stock'] > 0 ? 'En stock (' . $product['stock'] . ')' : 'Rupture' ?>
                                     </span>
                                 </div>
-                            </div>
-                            <div class="card-footer bg-white border-top-0">
-                                <!-- <button class="btn btn-dark w-100 <?= $product['stock'] <= 0 ? 'disabled' : '' ?>">
-                                    Ajouter au panier
-                                </button> -->
-                                <a href="index.php?page=ajouter_panier&id=<?= $product['id'] ?>" class="btn btn-dark w-100 <?= $product['stock'] <= 0 ? 'disabled' : '' ?>">
+
+                                <a href="index.php?page=ajouter_panier&id=<?= $product['id'] ?>" 
+                                class="btn btn-dark w-100 <?= $product['stock'] <= 0 ? 'disabled' : '' ?>">
                                     Ajouter au panier
                                 </a>
                             </div>
+
                         </div>
                     </div>
                 <?php endforeach; ?>
