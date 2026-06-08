@@ -28,55 +28,75 @@
         </div>
     </nav>
 
-    <div class="container flex-grow-1">
-        <h2 class="mb-4 fw-bold">Votre Panier d'Achats</h2>
+    <div class="container my-5">
+    <h2 class="fw-bold mb-4">Votre Panier d'Achat</h2>
 
-        <?php if (empty($panier)): ?>
-            <div class="alert alert-warning text-center py-5">
-                <p class="fs-5 mb-3">Votre panier est malheureusement vide...</p>
-                <a href="index.php?page=catalogue" class="btn btn-dark">Découvrir nos produits</a>
-            </div>
-        <?php else: ?>
-            <div class="row">
-                <div class="col-lg-8 mb-4">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-body p-0">
-                            <table class="table table-hover align-middle mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Produit</th>
-                                        <th>Prix Unitaire</th>
-                                        <th>Quantité</th>
-                                        <th>Sous-total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($panier as $id => $item): ?>
-                                        <tr>
-                                            <td class="fw-bold"><?= htmlspecialchars($item['nom']) ?></td>
-                                            <td><?= number_format($item['prix'], 0, ',', ' ') ?> F</td>
-                                            <td><span class="badge bg-secondary fs-6"><?= $item['quantite'] ?></span></td>
-                                            <td class="fw-bold text-primary"><?= number_format($item['prix'] * $item['quantite'], 0, ',', ' ') ?> F CFA</td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+    <?php if (empty($cartItems)): ?>
+        <div class="alert alert-warning text-center py-4">
+            <p class="mb-3">Votre panier est actuellement vide.</p>
+            <a href="index.php?page=catalogue" class="btn btn-dark fw-bold">Découvrir nos produits</a>
+        </div>
+    <?php else: ?>
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="table-responsive bg-white shadow-sm rounded p-3">
+                    <table class="table align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Produit</th>
+                                <th>Prix</th>
+                                <th>Quantité</th>
+                                <th>Sous-total</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($cartItems as $item): ?>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="public/images/<?= htmlspecialchars($item['image'] ?? 'default.jpg') ?>" 
+                                                 alt="<?= htmlspecialchars($item['nom']) ?>" 
+                                                 style="width: 60px; height: 60px; object-fit: cover;" 
+                                                 class="rounded me-3">
+                                            <span class="fw-bold"><?= htmlspecialchars($item['nom']) ?></span>
+                                        </div>
+                                    </td>
+                                    <td><?= number_format($item['prix'], 0, ',', ' ') ?> F CFA</td>
+                                    <td>
+                                        <span class="badge bg-dark px-3 py-2 fs-6"><?= $item['quantite'] ?></span>
+                                    </td>
+                                    <td class="fw-bold text-primary"><?= number_format($item['sous_total'], 0, ',', ' ') ?> F CFA</td>
+                                    <td>
+                                        <a href="index.php?page=supprimer_panier&id=<?= $item['id'] ?>" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-trash"></i> Retirer
+                                        </a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 </div>
+            </div>
 
                 <div class="col-lg-4">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-header bg-dark text-white fw-bold">Résumé de la commande</div>
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between mb-3 fs-5">
-                                <span>Total à payer :</span>
-                                <span class="fw-bold text-success"><?= number_format($total, 0, ',', ' ') ?> F CFA</span>
-                            </div>
-                            <hr>
-                            <button class="btn btn-success w-100 mb-2">Procéder au paiement</button>
-                            <a href="index.php?page=vider_panier" class="btn btn-outline-danger btn-sm w-100">Vider le panier</a>
-                        </div>
+                    <div class="card shadow-sm border-0 p-4 bg-white">
+                    <h4 class="fw-bold mb-4">Résumé de la commande</h4>
+                    <div class="d-flex justify-content-between mb-3 fs-5">
+                        <span>Total articles :</span>
+                        <span class="fw-bold text-primary"><?= number_format($totalGeneral, 0, ',', ' ') ?> F CFA</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-4 fs-4 fw-bold">
+                        <span>Net à payer :</span>
+                        <span><?= number_format($totalGeneral, 0, ',', ' ') ?> F CFA</span>
+                    </div>
+                    <a href="index.php?page=commander" class="btn btn-danger w-100 py-2 fw-bold disabled">
+                        Passer à la caisse (Bientôt disponible)
+                    </a>
+                    <a href="index.php?page=catalogue" class="btn btn-outline-dark w-100 mt-2 py-2">
+                        Continuer mes achats
+                    </a>
                     </div>
                 </div>
             </div>
