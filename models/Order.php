@@ -98,4 +98,44 @@ class Order {
             ':id' => $orderId
         ]);
     }
+    /**
+     * [Admin] Récupérer les statistiques globales de la boutique
+     */
+    public function getAdminStats() {
+        // 1. Calcul du Chiffre d'Affaires (uniquement sur les commandes non annulées)
+        $sqlCA = "SELECT SUM(total_ttc) as total_ca FROM orders WHERE status != 'Annulée'";
+        $stmtCA = $this->db->query($sqlCA);
+        $resCA = $stmtCA->fetch(PDO::FETCH_ASSOC);
+
+        // 2. Nombre de commandes en attente
+        $sqlWait = "SELECT COUNT(*) as total_attente FROM orders WHERE status = 'En attente'";
+        $stmtWait = $this->db->query($sqlWait);
+        $resWait = $stmtWait->fetch(PDO::FETCH_ASSOC);
+
+        // 3. Nombre total de commandes passées
+        $sqlTotal = "SELECT COUNT(*) as total_ordres FROM orders";
+        $stmtTotal = $this->db->query($sqlTotal);
+        $resTotal = $stmtTotal->fetch(PDO::FETCH_ASSOC);
+
+        return [
+            'ca' => $resCA['total_ca'] ?? 0,
+            'en_attente' => $resWait['total_attente'] ?? 0,
+            'total_commandes' => $resTotal['total_ordres'] ?? 0
+        ];
+    }
+    /**
+     * [Admin & Client] Récupérer les articles d'une commande spécifique
+     */
+    public function getOrderItems($orderId) {
+        // On sélectionne explicitement les champs pour éviter les surprises
+        // Remplace 'order_items' par le nom exact de ta table intermédiaire si nécessaire
+        $sql = "SELECT oi.*, p.nom, p.image, p.prix 
+                FROM order_items oi 
+                INNER JOIN products p ON oi.product_id = p.id 
+                WHERE oi.order_id = :order_id";
+                
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':order_id' => $orderId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

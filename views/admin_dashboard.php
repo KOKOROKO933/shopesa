@@ -5,19 +5,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ShopCaphy - Espace Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .admin-banner {
+            background: linear-gradient(135deg, #112233 0%, #1a3a5c 100%);
+            color: #ffffff;
+            padding: 2.5rem 2rem;
+            border-radius: 0 0 15px 15px;
+        }
+        .stat-card {
+            border: none;
+            border-radius: 12px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
+        }
+        .card-ca { background-color: #3b71ca !important; }
+        .card-attente { background-color: #e4be5b !important; color: #212529 !important; }
+        .card-total { background-color: #0b0f19 !important; }
+        
+        .stat-icon {
+            font-size: 2.5rem;
+            opacity: 0.8;
+        }
+    </style>
 </head>
 <body class="bg-light d-flex flex-column min-vh-100">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-danger mb-4">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="index.php?page=home">ShopCaphy Dashboard Admin</a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link text-white fw-bold" href="index.php?page=catalogue">Voir le site public</a>
-                <a class="btn btn-sm btn-outline-light ms-3" href="index.php?page=deconnexion">Déconnexion</a>
+    <div class="admin-banner shadow-sm mb-5">
+        <div class="container-fluid d-flex flex-column flex-md-row justify-content-between align-items-center gap-4">
+            
+            <div>
+                <h1 class="fw-bold mb-0 tracking-tight" style="font-size: 2.2rem;">
+                    ShopCaphy <span class="fw-light opacity-75" style="font-size: 1.6rem;">Dashboard Admin</span>
+                </h1>
             </div>
-        </div>
-    </nav>
 
+            <div class="d-flex flex-wrap flex-md-nowrap gap-3 justify-content-center align-items-stretch" style="max-width: 900px; flex-grow: 1;">
+                
+                <div class="card stat-card card-ca text-white p-3 shadow-sm flex-fill" style="min-width: 200px;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="stat-icon">🪙</div>
+                        <div>
+                            <small class="text-uppercase fw-bold opacity-75 d-block" style="font-size: 0.75rem; letter-spacing: 0.5px;">Chiffre d'Affaires</small>
+                            <span class="fs-4 fw-bold text-nowrap"><?= number_format($stats['ca'], 0, ',', ' ') ?> F CFA</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card stat-card card-attente p-3 shadow-sm flex-fill" style="min-width: 200px;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="stat-icon">⏳</div>
+                        <div>
+                            <small class="text-uppercase fw-bold opacity-75 d-block" style="font-size: 0.75rem; letter-spacing: 0.5px;">Commandes en attente</small>
+                            <span class="fs-4 fw-bold text-nowrap"><?= $stats['en_attente'] ?> commande(s)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card stat-card card-total text-white p-3 shadow-sm flex-fill" style="min-width: 200px;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="stat-icon">📦</div>
+                        <div>
+                            <small class="text-uppercase fw-bold opacity-75 d-block" style="font-size: 0.75rem; letter-spacing: 0.5px;">Total Commandes</small>
+                            <span class="fs-4 fw-bold text-nowrap"><?= $stats['total_commandes'] ?> reçue(s)</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="d-flex align-items-center gap-2 text-nowrap">
+                <a href="index.php?page=home" class="btn btn-sm btn-outline-light px-3 py-2 rounded-pill fw-semibold">
+                    👁️ Voir le site public
+                </a>
+                <a href="index.php?page=deconnexion" class="btn btn-sm btn-danger px-3 py-2 rounded-pill fw-semibold">
+                    Déconnexion 🔑
+                </a>
+            </div>
+
+        </div>
+    </div>
     <div class="container flex-grow-1">
         <div class="row">
             
@@ -129,7 +198,7 @@
 
         </div>
     </div>
-    <div class="container my-5">
+    <div class="container-fluid px-4 my-5">
     <hr class="my-5">
     <h3 class="fw-bold text-dark mb-4">🗂️ Gestion des Commandes Clients</h3>
 
@@ -146,6 +215,7 @@
                             <th>Client</th>
                             <th>Date</th>
                             <th>Montant TTC</th>
+                            <!-- <th>Articles</th> -->
                             <th>Statut Actuel</th>
                             <th class="text-center">Changer le Statut</th>
                         </tr>
@@ -160,11 +230,18 @@
                                 </td>
                                 <td><?= date('d/m/Y à H:i', strtotime($order['created_at'])) ?></td>
                                 <td class="fw-bold text-danger"><?= number_format($order['total_ttc'], 0, ',', ' ') ?> F CFA</td>
+                                <!-- <td>
+                                    <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#modalCommande<?= $order['id'] ?>">
+                                        👁️ Voir articles (<?= count($order['items']) ?>)
+                                    </button>
+                                </td> -->
                                 <td>
                                     <?php if ($order['status'] === 'En attente'): ?>
                                         <span class="badge bg-warning text-dark px-2 py-2">En attente</span>
                                     <?php elseif ($order['status'] === 'Livrée'): ?>
                                         <span class="badge bg-success px-2 py-2">Livrée</span>
+                                    <?php elseif ($order['status'] === 'En cours de livraison'): ?>
+                                        <span class="badge bg-info text-dark px-2 py-2">En cours...</span>
                                     <?php else: ?>
                                         <span class="badge bg-secondary px-2 py-2"><?= htmlspecialchars($order['status']) ?></span>
                                     <?php endif; ?>
@@ -186,6 +263,68 @@
                     </tbody>
                 </table>
             </div>
+
+            <?php foreach ($allOrders as $order): ?>
+                <div class="modal fade" id="modalCommande<?= $order['id'] ?>" tabindex="-1" aria-labelledby="labelModal<?= $order['id'] ?>" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content text-start">
+                            <div class="modal-header bg-dark text-white">
+                                <h5 class="modal-title fw-bold" id="labelModal<?= $order['id'] ?>">Détails de la Commande #<?= $order['id'] ?></h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <strong>👤 Client :</strong> <?= htmlspecialchars($order['client_nom']) ?> (<?= htmlspecialchars($order['client_email']) ?>)<br>
+                                    <strong>📅 Date de commande :</strong> <?= date('d/m/Y à H:i', strtotime($order['created_at'])) ?>
+                                </div>
+                                <hr>
+                                <h6 class="fw-bold text-secondary mb-3">📦 Panier commandé :</h6>
+                                <div class="table-responsive">
+                                    <table class="table align-middle">
+                                        <thead>
+                                            <tr class="table-light">
+                                                <th>Produit</th>
+                                                <th class="text-center">Quantité</th>
+                                                <th class="text-end">Prix Unitaire</th>
+                                                <th class="text-end">Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($order['items'] as $item): ?>
+                                                <?php 
+                                                    // Sécurité : Détection automatique des noms de colonnes (Français ou Anglais)
+                                                    $quantite = $item['quantity'] ?? $item['quantite'] ?? 1;
+                                                    
+                                                    // On prend le prix payé au moment de la commande, sinon le prix actuel du produit
+                                                    $prix_unitaire = $item['price'] ?? $item['prix'] ?? 0; 
+                                                    
+                                                    $total_ligne = $prix_unitaire * $quantite;
+                                                    
+                                                    // Gestion de l'image par défaut si elle est vide
+                                                    $image_produit = !empty($item['image']) ? $item['image'] : 'default.jpg';
+                                                ?>
+                                                <tr>
+                                                    <td>
+                                                        <img src="public/images/<?= htmlspecialchars($image_produit) ?>" alt="" style="width: 45px; height: 45px; object-fit: cover;" class="rounded me-2">
+                                                        <strong><?= htmlspecialchars($item['nom'] ?? 'Produit inconnu') ?></strong>
+                                                    </td>
+                                                    <td class="text-center fw-bold">x<?= $quantite ?></td>
+                                                    <td class="text-end"><?= number_format($prix_unitaire, 0, ',', ' ') ?> F CFA</td>
+                                                    <td class="text-end fw-bold text-primary"><?= number_format($total_ligne, 0, ',', ' ') ?> F CFA</td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="modal-footer bg-light">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+
         <?php endif; ?>
     </div>
 

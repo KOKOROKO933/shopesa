@@ -100,6 +100,10 @@ class AdminController {
         
         $orderModel = new Order($this->db);
         $allOrders = $orderModel->getAllOrders();
+        $stats = $orderModel->getAdminStats();
+        foreach ($allOrders as $key => $order) {
+            $allOrders[$key]['items'] = $orderModel->getOrderItems($order['id']);
+        }
 
         // Un seul et unique chargement de la vue à la toute fin !
         // require_once 'views/header.php';

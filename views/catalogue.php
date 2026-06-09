@@ -30,7 +30,21 @@
 
     <div class="container flex-grow-1">
         <h2 class="mb-4 text-center fw-bold">Notre Catalogue de Produits</h2>
+    <div class="container mb-4">
+        <div class="d-flex flex-wrap gap-2 justify-content-center">
+            <a href="index.php?page=catalogue" 
+                class="btn <?= empty($catIdSelectionne) ? 'btn-dark' : 'btn-outline-dark' ?> rounded-pill fw-bold">
+                    Tous les produits
+            </a>
 
+            <?php foreach ($categories as $cat): ?>
+                <a href="index.php?page=catalogue&cat_id=<?= $cat['id'] ?>" 
+                    class="btn <?= ($catIdSelectionne == $cat['id']) ? 'btn-danger' : 'btn-outline-danger' ?> rounded-pill fw-bold">
+                    <?= htmlspecialchars($cat['nom']) ?>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </div>  
         <?php if (empty($products)): ?>
             <div class="alert alert-info text-center">Aucun produit n'est disponible pour le moment.</div>
         <?php else: ?>
@@ -39,21 +53,7 @@
                 <?php foreach ($products as $product): ?>
                     <div class="col-md-4 mb-4">
                         <div class="card h-100 shadow-sm border-0">
-                        <div class="container mb-4">
-                            <div class="d-flex flex-wrap gap-2 justify-content-center">
-                                <a href="index.php?page=catalogue" 
-                                class="btn <?= empty($catIdSelectionne) ? 'btn-dark' : 'btn-outline-dark' ?> rounded-pill fw-bold">
-                                    Tous les produits
-                                </a>
-
-                                <?php foreach ($categories as $cat): ?>
-                                    <a href="index.php?page=catalogue&cat_id=<?= $cat['id'] ?>" 
-                                    class="btn <?= ($catIdSelectionne == $cat['id']) ? 'btn-danger' : 'btn-outline-danger' ?> rounded-pill fw-bold">
-                                        <?= htmlspecialchars($cat['nom']) ?>
-                                    </a>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>    
+                          
                             <div class="card-img-top-wrapper bg-light" style="height: 400px; overflow: hidden;">
                                 <?php 
                                 $imageName = !empty($product['image']) ? $product['image'] : 'default.jpg';
