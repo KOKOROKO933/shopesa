@@ -36,4 +36,29 @@ class User {
         
         return $stmt->fetch(); // Retourne les données de l'utilisateur ou false s'il n'existe pas
     }
+    /**
+     * Mettre à jour les informations de base du profil client
+     */
+    public function updateProfile($id, $nom, $email) {
+        $sql = "UPDATE users SET nom = :nom, email = :email WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ':nom' => $nom,
+            ':email' => $email,
+            ':id' => $id
+        ]);
+    }
+
+    /**
+     * Mettre à jour le mot de passe de manière hachée et sécurisée
+     */
+    public function updatePassword($id, $newPassword) {
+        $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
+        $sql = "UPDATE users SET password = :password WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ':password' => $hashedPassword,
+            ':id' => $id
+        ]);
+    }
 }

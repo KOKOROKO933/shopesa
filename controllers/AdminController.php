@@ -24,6 +24,24 @@ class AdminController {
             exit();
         }
 
+        // 🛠️ CORRECTION : On crée l'objet Order TOUT EN HAUT pour pouvoir l'utiliser directement !
+        $orderModel = new Order($this->db);
+
+        // Récupération des données pour le graphique de ventes
+        $salesData = $orderModel->getSalesEvolution();
+
+        // On prépare des tableaux simples pour JavaScript
+        $chartLabels = [];
+        $chartValues = [];
+        foreach ($salesData as $data) {
+            $chartLabels[] = date('d/m', strtotime($data['date_vente'])); // Format jour/mois
+            $chartValues[] = $data['total_jour'];
+        }
+
+        // Passage des données en JSON sécurisé pour la vue
+        $jsonLabels = json_encode($chartLabels);
+        $jsonValues = json_encode($chartValues);
+
         $erreur = null;
         $succes = null;
         $productToEdit = null;
@@ -98,7 +116,7 @@ class AdminController {
         // Récupération des données pour la vue (Produits + Commandes)
         $products = $this->productModel->getAllProducts();
         
-        $orderModel = new Order($this->db);
+        // 🛠️ Note : $orderModel a déjà été instancié plus haut, on réutilise directement la variable
         $allOrders = $orderModel->getAllOrders();
         $stats = $orderModel->getAdminStats();
         foreach ($allOrders as $key => $order) {
@@ -106,7 +124,6 @@ class AdminController {
         }
 
         // Un seul et unique chargement de la vue à la toute fin !
-        // require_once 'views/header.php';
         require_once 'views/admin_dashboard.php';
     }
 
@@ -128,6 +145,28 @@ class AdminController {
         }
 
         header('Location: index.php?page=admin_dashboard');
+        exit();
+    }
+    public function exportSales() {
+        if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
+            exit("Accès refusé.");
+        }
+
+        // 💡 Vérifie bien que tu as écrit $this->db ici :
+        $orderModel = new Order($this->db);
+        $sales = $orderModel->getSalesEvolution();
+
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename=Rapport_Ventes_ShopCaphy_' . date('Y-m-d') . '.csv');
+
+        $output = fopen('php://output', 'w');
+        fputcsv($output, ['Date de Vente', 'Chiffre d Affaires (F CFA)'], ';');
+
+        foreach ($sales as $row) {
+            fputcsv($output, [$row['date_vente'], $row['total_jour']], ';');
+        }
+
+        fclose($output);
         exit();
     }
 }

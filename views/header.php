@@ -6,6 +6,43 @@
     <title>ShopCaphy - Plateforme E-Commerce</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
+    <style>
+        #preloader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #1a3a5c; /* Ton bleu nuit */
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        .coin {
+            width: 60px; height: 60px;
+            background-color: #e4be5b; /* Ton Or */
+            border-radius: 50%;
+            position: relative;
+            border: 4px dashed #fff;
+            box-shadow: 0 0 15px rgba(228, 190, 91, 0.6);
+            animation: spin3d 1.5s infinite linear;
+        }
+        @keyframes spin3d {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+        .fade-out { opacity: 0; pointer-events: none; }
+        </style>
+
+        <div id="preloader">
+            <div class="coin"></div>
+        </div>
+
+        <script>
+        window.addEventListener('load', () => {
+            const preloader = document.getElementById('preloader');
+            setTimeout(() => {
+                preloader.classList.add('fade-out');
+            }, 800); // Laisse l'animation tourner un court instant
+        });
+    </script>
 </head>
 <body class="bg-light">
 

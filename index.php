@@ -31,6 +31,7 @@ $adminController = new AdminController($pdo); // ou ($db) selon le nom de ton ob
 
 // Récupération de la page demandée (par défaut 'home')
 $page = isset($_GET['page']) ? $_GET['page'] : 'home';
+$page = isset($_GET['page']) ? $_GET['page'] : 'home';
 
 // CODE TEMPORAIRE DE TEST
 if (isset($_GET['test_admin'])) {
@@ -133,7 +134,44 @@ switch ($page) {
         $adminController->modifierStatutCommande();
         break;
 
+    case 'profile':
+        require_once 'controllers/ProfileController.php';
+        $controller = new ProfileController($db);
+        $controller->index();
+        break;
+
+    case 'profile_update':
+        require_once 'controllers/ProfileController.php';
+        $controller = new ProfileController($db);
+        $controller->update();
+        break; 
+
+    // ... tes autres cas (home, admin_dashboard, connexion...) ...
+
+    case 'admin_dashboard':
+        require_once 'controllers/AdminController.php';
+        $controller = new AdminController($db);
+        $controller->dashboard();
+        break;
+
+    // 📥 AJOUT : Routage pour l'exportation CSV/Excel des ventes
+    case 'export_sales':
+        require_once 'controllers/AdminController.php';
+        // 📁 Remplacer $db par la vraie variable globale de connexion (ex: $pdo)
+        $controller = new AdminController($pdo); 
+        $controller->exportSales();
+        break;
+    case 'modifier_statut_commande':
+        require_once 'controllers/AdminController.php';
+        $controller = new AdminController($db);
+        $controller->modifierStatutCommande();
+        break;
+
+    // ...
     default:
+        require_once 'controllers/HomeController.php';
+        $controller = new HomeController($db);
+        $controller->index();
         http_response_code(404);
         echo "<h1>Erreur 404 - Page non trouvée</h1>";
         break;

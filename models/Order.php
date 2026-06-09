@@ -138,4 +138,32 @@ class Order {
         $stmt->execute([':order_id' => $orderId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    /**
+     * Récupérer toutes les commandes passées par un client spécifique
+     */
+    public function getUserOrders($userId) {
+        $sql = "SELECT * FROM orders WHERE user_id = :user_id ORDER BY created_at DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':user_id' => $userId]);
+        $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // On inclut aussi les articles pour chaque commande du client
+        foreach ($orders as $key => $order) {
+            $orders[$key]['items'] = $this->getOrderItems($order['id']);
+        }
+        return $orders;
+    }
+    /**
+     * [Admin] Récupérer l'évolution du Chiffre d'Affaires par jour
+     */
+    public function getSalesEvolution() {
+        $sql = "SELECT DATE(created_at) as date_vente, SUM(total_ttc) as total_jour 
+                FROM orders 
+                WHERE status != 'Annulée' 
+                GROUP BY DATE(created_at) 
+                ORDER BY date_vente ASC 
+                LIMIT 10"; // On prend les 10 derniers jours d'activité
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

@@ -141,6 +141,7 @@
                     </div>
                 </div>
             </div>
+            
 
             <div class="col-lg-8">
                 <div class="card shadow-sm border-0">
@@ -196,6 +197,27 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+    <a href="index.php?page=export_sales" class="btn btn-success shadow-sm mb-3">
+    📥 Exporter les Ventes (CSV / Excel)
+    </a>
+    <div class="row g-4 my-4 px-2">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-3 bg-white p-4">
+                <h5 class="fw-bold text-dark mb-3">📈 Évolution du Chiffre d'Affaires</h5>
+                <div style="position: relative; height:220px;">
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 rounded-3 bg-white p-4">
+                <h5 class="fw-bold text-dark mb-3">📊 Vue d'ensemble</h5>
+                <div style="position: relative; height:300px; display: flex; justify-content: center;">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
         </div>
     </div>
     <div class="container-fluid px-4 my-5">
@@ -327,6 +349,81 @@
 
         <?php endif; ?>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // Configuration du graphique de l'évolution des ventes (Line Chart)
+        const ctxSales = document.getElementById('salesChart').getContext('2d');
+        new Chart(ctxSales, {
+            type: 'line',
+            data: {
+                labels: <?= $jsonLabels ?>, // Tes dates
+                datasets: [{
+                    label: 'Ventes (F CFA)',
+                    data: <?= $jsonValues ?>, // Tes montants
+                    borderColor: '#3b71ca',
+                    backgroundColor: 'rgba(59, 113, 202, 0.08)', // Léger dégradé sous la courbe
+                    borderWidth: 3,
+                    
+                    // 🪄 LES SECRETS DE LA COURBE LISSE :
+                    tension: 0.4,                 // Ajuste la rondeur de la courbe (0 = droit, 0.4 = courbe parfaite)
+                    cubicInterpolationMode: 'monotone', // Assure une transition douce entre les points
+                    
+                    fill: true,
+                    pointBackgroundColor: '#1a3a5c',
+                    pointRadius: 4,               // Taille du point pour qu'il soit bien visible
+                    pointHoverRadius: 6           // Effet de survol sympa
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                // 🚀 Animations dynamiques au chargement
+                animations: {
+                    tension: {
+                        duration: 1000,
+                        easing: 'linear',
+                        from: 1,
+                        to: 0.4,
+                        loop: false
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { 
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0, 0, 0, 0.05)' } // Grilles discrètes
+                    },
+                    x: {
+                        grid: { display: false } // On cache la grille verticale pour un effet plus épuré
+                    }
+                }
+            }
+        });
+
+        // Configuration du graphique des statuts de commandes (Doughnut)
+        const ctxStatus = document.getElementById('statusChart').getContext('2d');
+        new Chart(ctxStatus, {
+            type: 'doughnut',
+            data: {
+                labels: ['En attente', 'Livrées'],
+                datasets: [{
+                    data: [<?= $stats['en_attente'] ?>, <?= $stats['total_commandes'] - $stats['en_attente'] ?>],
+                    backgroundColor: ['#e4be5b', '#198754'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    </script>
 
     <footer class="bg-dark text-white text-center py-3 mt-5">
         <p class="mb-0">&copy; 2026 ShopCaphy - Espace Admin.</p>
