@@ -27,9 +27,19 @@ $authController    = new AuthController($pdo);
 $productController = new ProductController($pdo);
 $cartController    = new CartController($pdo);
 $orderController = new OrderController($pdo);
+$adminController = new AdminController($pdo); // ou ($db) selon le nom de ton objet PDO principal
 
 // Récupération de la page demandée (par défaut 'home')
 $page = isset($_GET['page']) ? $_GET['page'] : 'home';
+
+// CODE TEMPORAIRE DE TEST
+if (isset($_GET['test_admin'])) {
+    $testOrder = new Order($pdo);
+    echo "<pre>Méthodes trouvées dans le Modèle Order :<br>";
+    print_r(get_class_methods($testOrder));
+    echo "</pre>";
+    exit();
+}
 
 // Routeur (Aiguillage des requêtes)
 switch ($page) {
@@ -112,7 +122,17 @@ switch ($page) {
     case 'supprimer_panier':
         $cartController->remove(); // Supprime un produit spécifique
         break;
-        
+    
+    case 'admin_dashboard':
+        // On appelle la méthode du contrôleur qui va récupérer $allOrders et charger la vue
+        $adminController->dashboard();
+        break;
+
+    case 'admin_modifier_statut':
+        // On appelle la méthode qui traite le formulaire POST de mise à jour du statut
+        $adminController->modifierStatutCommande();
+        break;
+
     default:
         http_response_code(404);
         echo "<h1>Erreur 404 - Page non trouvée</h1>";

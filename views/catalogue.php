@@ -54,7 +54,7 @@
                                 <?php endforeach; ?>
                             </div>
                         </div>    
-                            <div class="card-img-top-wrapper bg-light" style="height: 200px; overflow: hidden;">
+                            <div class="card-img-top-wrapper bg-light" style="height: 400px; overflow: hidden;">
                                 <?php 
                                 $imageName = !empty($product['image']) ? $product['image'] : 'default.jpg';
                                 $imagePath = 'public/images/' . $imageName;

@@ -2,27 +2,38 @@
 // controllers/AdminController.php
 
 require_once 'models/Product.php';
+require_once 'models/Order.php';
 
 class AdminController {
     private $productModel;
+    private $db;
 
+    // Le constructeur doit UNIQUEMENT stocker la connexion, sans rediriger !
     public function __construct($database) {
-        if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
-            header('Location: index.php?page=home');
-            exit();
-        }
         $this->productModel = new Product($database);
+        $this->db = $database;
     }
 
+    /**
+     * Afficher le tableau de bord Admin (Produits + Commandes)
+     */
     public function dashboard() {
+        // La sécurité s'applique UNIQUEMENT ici
+        if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
+            header('Location: index.php?page=connexion');
+            exit();
+        }
+
         $erreur = null;
         $succes = null;
         $productToEdit = null;
 
+        // Gestion de la modification d'un produit (récupération des données)
         if (isset($_GET['action']) && $_GET['action'] === 'modifier' && isset($_GET['id'])) {
             $productToEdit = $this->productModel->getProductById(intval($_GET['id']));
         }
 
+        // Traitement du formulaire POST (Ajout / Modification de produit)
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $nom = trim($_POST['nom']);
             $description = trim($_POST['description']);
@@ -40,16 +51,13 @@ class AdminController {
                     $fileInfo = pathinfo($_FILES['image_fichier']['name']);
                     $extension = strtolower($fileInfo['extension']);
 
-                    // Vérifier si le format est accepté
                     if (in_array($extension, $allowedExtensions)) {
-                        // Créer un nom unique pour l'image (ex: 171892012_communique.png) pour éviter d'écraser une autre photo
                         $nomImage = time() . '_' . basename($_FILES['image_fichier']['name']);
                         $targetDir = "public/images/";
                         $targetFilePath = $targetDir . $nomImage;
 
-                        // Déplacer physiquement le fichier dans le dossier public/images/
                         if (!move_uploaded_file($_FILES['image_fichier']['tmp_name'], $targetFilePath)) {
-                            $nomImage = null; // En cas d'échec du transfert
+                            $nomImage = null;
                         }
                     }
                 }
@@ -68,7 +76,6 @@ class AdminController {
                 } 
                 // Action : AJOUT
                 elseif ($_POST['action'] === 'ajouter') {
-                    // Si aucune image n'a été sélectionnée, on applique 'default.jpg'
                     $finalImage = $nomImage ? $nomImage : "default.jpg"; 
                     
                     if ($this->productModel->addProduct($nom, $description, $prix, $stock, $finalImage)) {
@@ -80,6 +87,7 @@ class AdminController {
             }
         }
 
+        // Action : SUPPRESSION
         if (isset($_GET['action']) && $_GET['action'] === 'supprimer' && isset($_GET['id'])) {
             $id = intval($_GET['id']);
             $this->productModel->deleteProduct($id);
@@ -87,7 +95,35 @@ class AdminController {
             exit();
         }
 
+        // Récupération des données pour la vue (Produits + Commandes)
         $products = $this->productModel->getAllProducts();
+        
+        $orderModel = new Order($this->db);
+        $allOrders = $orderModel->getAllOrders();
+
+        // Un seul et unique chargement de la vue à la toute fin !
+        // require_once 'views/header.php';
         require_once 'views/admin_dashboard.php';
+    }
+
+    /**
+     * Modifier le statut d'une commande via un formulaire
+     */
+    public function modifierStatutCommande() {
+        if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
+            header('Location: index.php?page=connexion');
+            exit();
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $orderId = intval($_POST['order_id']);
+            $newStatus = $_POST['status'];
+
+            $orderModel = new Order($this->db);
+            $orderModel->updateStatus($orderId, $newStatus);
+        }
+
+        header('Location: index.php?page=admin_dashboard');
+        exit();
     }
 }

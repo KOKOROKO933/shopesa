@@ -74,4 +74,28 @@ class Order {
         $stmt->execute([':user_id' => $userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    /**
+     * [Admin] Récupérer toutes les commandes de la boutique avec les infos du client
+     */
+    public function getAllOrders() {
+        $sql = "SELECT orders.*, users.nom AS client_nom, users.email AS client_email 
+                FROM orders 
+                INNER JOIN users ON orders.user_id = users.id 
+                ORDER BY orders.created_at DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * [Admin] Modifier le statut d'une commande
+     */
+    public function updateStatus($orderId, $newStatus) {
+        $sql = "UPDATE orders SET status = :status WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ':status' => $newStatus,
+            ':id' => $orderId
+        ]);
+    }
 }
