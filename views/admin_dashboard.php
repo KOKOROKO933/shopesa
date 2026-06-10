@@ -206,7 +206,7 @@
         <div class="col-lg-8">
             <div class="card shadow-sm border-0 rounded-3 bg-white p-4">
                 <h5 class="fw-bold text-dark mb-3">📈 Évolution du Chiffre d'Affaires</h5>
-                <div style="position: relative; height:220px;">
+                <div style="position: relative; height:300px;">
                     <canvas id="salesChart"></canvas>
                 </div>
             </div>
