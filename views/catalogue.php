@@ -30,26 +30,26 @@
 
     <div class="container flex-grow-1">
         <h2 class="mb-4 text-center fw-bold">Notre Catalogue de Produits</h2>
-    <div class="container mb-4">
-        <div class="d-flex flex-wrap gap-2 justify-content-center">
-            <a href="index.php?page=catalogue" 
-                class="btn <?= empty($catIdSelectionne) ? 'btn-dark' : 'btn-outline-dark' ?> rounded-pill fw-bold">
-                    Tous les produits
-            </a>
-
+        
+        <div class="categories-filter mb-5 text-center">
+            <a href="index.php?page=catalogue" class="btn btn-outline-dark <?= !isset($_GET['categorie_id']) ? 'active' : '' ?>">Produits</a>
+            
             <?php foreach ($categories as $cat): ?>
-                <a href="index.php?page=catalogue&cat_id=<?= $cat['id'] ?>" 
-                    class="btn <?= ($catIdSelectionne == $cat['id']) ? 'btn-danger' : 'btn-outline-danger' ?> rounded-pill fw-bold">
+                <a href="index.php?page=catalogue&categorie_id=<?= $cat['id'] ?>" 
+                   class="btn btn-outline-danger <?= (isset($_GET['categorie_id']) && $_GET['categorie_id'] == $cat['id']) ? 'active' : '' ?>">
                     <?= htmlspecialchars($cat['nom']) ?>
                 </a>
             <?php endforeach; ?>
         </div>
-    </div>  
-        <?php if (empty($products)): ?>
-            <div class="alert alert-info text-center">Aucun produit n'est disponible pour le moment.</div>
-        <?php else: ?>
-           <div class="row">
-            
+
+        <div class="row">
+            <?php if (!isset($_GET['categorie_id']) || empty($products)): ?>
+                <div class="col-12 text-center my-5">
+                    <div class="p-5 bg-white rounded shadow-sm d-inline-block">
+                        <p class="text-muted fs-5 mb-0">Veuillez sélectionner une catégorie ci-dessus pour découvrir nos produits.</p>
+                    </div>
+                </div>
+            <?php else: ?>
                 <?php foreach ($products as $product): ?>
                     <div class="col-md-4 mb-4">
                         <div class="card h-100 shadow-sm border-0">
@@ -60,9 +60,9 @@
                                 $imagePath = 'public/images/' . $imageName;
                                 ?>
                                 <img src="<?= $imagePath ?>" 
-                                    alt="<?= htmlspecialchars($product['nom']) ?>" 
-                                    class="img-fluid w-100 h-100" 
-                                    style="object-fit: cover;">
+                                     alt="<?= htmlspecialchars($product['nom']) ?>" 
+                                     class="img-fluid w-100 h-100" 
+                                     style="object-fit: cover;">
                             </div>
 
                             <div class="card-body d-flex flex-column">
@@ -81,7 +81,7 @@
                                 </div>
 
                                 <a href="index.php?page=ajouter_panier&id=<?= $product['id'] ?>" 
-                                class="btn btn-dark w-100 <?= $product['stock'] <= 0 ? 'disabled' : '' ?>">
+                                   class="btn btn-dark w-100 <?= $product['stock'] <= 0 ? 'disabled' : '' ?>">
                                     Ajouter au panier
                                 </a>
                             </div>
@@ -89,12 +89,12 @@
                         </div>
                     </div>
                 <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
+            <?php endif; ?>
+        </div>
     </div>
 
     <footer class="bg-dark text-white text-center py-3 mt-5">
-        <p class="mb-0">&copy; 2026 ShopCaphy . Tous droits réservés.</p>
+        <p class="mb-0">&copy; 2026 ShopCaphy. Tous droits réservés.</p>
     </footer>
 </body>
 </html>

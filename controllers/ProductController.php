@@ -5,8 +5,10 @@ require_once 'models/Product.php';
 
 class ProductController {
     private $productModel;
+    private $db;
 
     public function __construct($database) {
+        $this->db = $database;
         $this->productModel = new Product($database);
     }
 
@@ -14,22 +16,23 @@ class ProductController {
      * Afficher le catalogue public
      */
     public function catalogue() {
-    // Récupérer toutes les catégories (contient désormais l'id et le nom)
-    $categories = $this->productModel->getCategories();
+        // 1. Récupération des catégories via la méthode existante du Modèle
+        $categories = $this->productModel->getCategories(); 
+        
+        // 2. Gestion des filtres d'affichage des produits
+        if (isset($_GET['categorie_id'])) {
+            // Filtrer par catégorie
+            $categoryId = intval($_GET['categorie_id']);
+            $products = $this->productModel->getProductsByCategory($categoryId);
+        } elseif (isset($_GET['action']) && $_GET['action'] === 'all') {
+            // Afficher tous les produits si clic sur "Tous les produits"
+            $products = $this->productModel->getAllProducts();
+        } else {
+            // Affichage par défaut : Tous les produits
+            $products = $this->productModel->getAllProducts(); 
+        }
 
-    // Vérifier si un ID de catégorie est passé dans l'URL (ex: &cat_id=2)
-    $catIdSelectionne = isset($_GET['cat_id']) ? intval($_GET['cat_id']) : null;
-
-    if ($catIdSelectionne) {
-        // Si un ID est sélectionné, on filtre par cat_id
-        $products = $this->productModel->getProductsByCategory($catIdSelectionne);
-    } else {
-        // Sinon, on affiche tout
-        $products = $this->productModel->getAllProducts();
+        // 3. Charger la vue
+        require_once 'views/catalogue.php';
     }
-
-    // Charger la vue
-    require_once 'views/catalogue.php';
-    }
-
 }
